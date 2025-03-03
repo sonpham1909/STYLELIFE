@@ -144,3 +144,31 @@ export const fetchProductById = createAsyncThunk(
     }
   }
 );
+
+export const searchProduct = createAsyncThunk(
+  'products/searchProduct',
+  async (keyword, thunkAPI) => {
+    try {
+
+      console.log(keyword);
+      
+      const token = await tokenService.getToken();
+      const response = await axios.get(`${API_URL}/products/search_similar`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          keyword: keyword,
+        },
+      });
+      return response.data
+      console.log(response.data);
+      
+      
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response ? error.response.data.message : error.message
+      );
+    }
+  }
+);

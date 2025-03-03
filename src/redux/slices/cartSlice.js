@@ -37,8 +37,10 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload;
-      })
+        state.cart = []; // Làm trống giỏ hàng nếu lỗi
+        state.cartLength = 0;
+        state.error = action.payload || 'Không thể tải giỏ hàng.';
+      })      
       .addCase(addTocCart.pending, state => {
         state.isLoading = true;
         state.error = null;

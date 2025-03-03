@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import jwt_decode from 'jwt-decode';
 
 const TOKEN_KEY = 'accessToken';
 const TOKEN_EXPIRATION_KEY = 'accessTokenExpiration';
@@ -45,8 +46,48 @@ const removeToken = async () => {
   }
 };
 
+// Giải mã token để lấy userId
+const decodeTokenManually = (token) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(function (c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join('')
+    );
+
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Failed to manually decode token:', error);
+    return null;
+  }
+};
+
+// Sử dụng hàm này để giải mã
+const getUserIdFromToken = async () => {
+  try {
+    const token = await getToken();
+    if (token) {
+      const decodedPayload = decodeTokenManually(token);
+      console.log('Decoded Payload:', decodedPayload);
+
+      // Trả về userId từ payload của token (nếu có)
+      return decodedPayload.id; // Giả sử `id` được lưu trong payload
+    }
+    return null;
+  } catch (error) {
+    console.error('Failed to decode token:', error);
+    return null;
+  }
+};
+
 export default {
   setToken,
   getToken,
   removeToken,
+  getUserIdFromToken
 };

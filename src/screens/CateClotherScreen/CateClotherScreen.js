@@ -16,7 +16,6 @@ import SizeFilterModal from '../../components/CateClother/SizeFilterModal';
 import ColorFilterModal from '../../components/CateClother/ColorFilterModal';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useNavigation} from '@react-navigation/native';
-import cateClotherStyles from '../../styles/cateClotherStyles';
 import {fetchProductsBySubCategory} from '../../redux/actions/actionCategory';
 import {LogBox} from 'react-native';
 import {fetchProductsByVariant} from '../../redux/actions/actionProduct';
@@ -110,11 +109,12 @@ const CateClotherScreen = ({route}) => {
 
   const renderScene = useCallback(() => {
     return (
-      <View style={cateClotherStyles.container}>
+      <View style={styles.container}>
         {loading ? (
           <ActivityIndicator size="large" color="#00A65E" />
         ) : filteredProducts && filteredProducts.length > 0 ? (
-          <ProductList navigation={navigation} products={filteredProducts} />
+          <ProductList navigation={navigation}
+           products={filteredProducts} />
         ) : (
           <Text>Không có sản phẩm phù hợp với bộ lọc</Text>
         )}
@@ -123,7 +123,7 @@ const CateClotherScreen = ({route}) => {
   }, [filteredProducts, loading]);
 
   return (
-    <View style={cateClotherStyles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -200,9 +200,9 @@ const CateClotherScreen = ({route}) => {
         renderTabBar={props => (
           <TabBar
             {...props}
-            indicatorStyle={cateClotherStyles.indicator}
-            style={cateClotherStyles.tabBar}
-            labelStyle={cateClotherStyles.label}
+            indicatorStyle={styles.indicator}
+            style={styles.tabBar}
+            labelStyle={styles.label}
             activeColor="#00A65E"
             inactiveColor="#999"
             scrollEnabled
@@ -261,6 +261,11 @@ const CateClotherScreen = ({route}) => {
 export default CateClotherScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding:5,
+    backgroundColor: '#fff',
+  },
   backButton: {
     width: 30,
     height: 30,
@@ -326,4 +331,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginHorizontal: 10,
   },
+  tabBar: {
+    backgroundColor: '#FFF',
+  },
+  indicator: {
+    backgroundColor: '#00A65E',
+    height: 3,
+  },
+  label: {
+    fontWeight: 'bold',
+    textTransform: 'uppercase', // Giữ chữ không bị độn
+    fontWeight: 'bold',
+
+  }
 });

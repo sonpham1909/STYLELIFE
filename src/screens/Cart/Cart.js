@@ -7,6 +7,8 @@ import {
   Text,
   Alert,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+
 import CartItem from '../../components/Cart/CartItem';
 import TotalAmount from '../../components/Cart/TotalAmount';
 import CheckoutButton from '../../components/Cart/CheckoutButton';
@@ -23,6 +25,12 @@ const CartScreen = ({navigation}) => {
   const dispatch = useDispatch();
   const {cart, isLoading, error} = useSelector(state => state.cart);
 
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     dispatch(fetchCart());
+  //   }, [dispatch])
+  // );
+  
   // Load giỏ hàng khi mở màn hình
   useEffect(() => {
     dispatch(fetchCart());
@@ -85,9 +93,9 @@ const CartScreen = ({navigation}) => {
     );
   }
 
-  // if (error) {
-  //   return <StatusView error={error} />;
-  // }
+  if (error) {
+    return <StatusView error={error} />;
+  }
   // Render giỏ hàng khi có sản phẩm
   return (
     <View style={styles.container}>

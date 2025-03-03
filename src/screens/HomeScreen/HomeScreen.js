@@ -63,6 +63,7 @@ const HomeScreen = ({ navigation }) => {
         navigation={navigation}
         title="Sản Phẩm Mới Nhất"
         products={latestProducts || []}
+        horizontal={true}
       />
 
       {/* Popular Products */}
@@ -70,6 +71,7 @@ const HomeScreen = ({ navigation }) => {
         navigation={navigation}
         title="Sản Phẩm Phổ Biến"
         products={popularProducts || []}
+        horizontal={true}
       />
     </ScrollView>
   );

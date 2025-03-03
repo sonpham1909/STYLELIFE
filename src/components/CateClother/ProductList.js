@@ -5,7 +5,7 @@ import {fetchProductReviews} from '../../redux/actions/actionProduct';
 import {
   toggleFavorite,
   fetchFavoriteList,
-} from '../../redux/actions/favoriteActions';
+} from '../../redux/actions/actionFavorite';
 import {fetchVariantsByProductId} from '../../redux/actions/actionsVariant';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';

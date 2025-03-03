@@ -1,9 +1,8 @@
 import React from 'react';
-import { Image, Text, TouchableOpacity } from "react-native";
+import { Image, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from '@react-navigation/native';
-import cateStyles from '../../styles/cateStyles';
 
-const CategoryItem = ({ item, subCategories,categoryName }) => {
+const CategoryItem = ({ item, subCategories, categoryName }) => {
   const navigation = useNavigation();
 
   const handlePressCategory = () => {
@@ -12,24 +11,43 @@ const CategoryItem = ({ item, subCategories,categoryName }) => {
       return;
     }
 
-    // Điều hướng đến CateClotherScreen và truyền danh sách các danh mục con cùng với danh mục con được chọn
     navigation.navigate('CateClother', {
-      subCategories,     // Truyền danh sách các danh mục con
+      subCategories,
       selectedTabIndex: subCategories.findIndex(sub => sub._id === item._id),
-      categoryName // Truyền danh mục cha
+      categoryName
     });
   };
 
   return (
-    <TouchableOpacity style={cateStyles.categoryItem} onPress={handlePressCategory}>
+    <TouchableOpacity style={styles.categoryItem} onPress={handlePressCategory}>
       {item.image ? (
-        <Image source={{ uri: item.image }} style={cateStyles.categoryImage} />
+        <Image source={{ uri: item.image }} style={styles.categoryImage} />
       ) : (
         <Text>No Image</Text>
       )}
-      <Text style={cateStyles.categoryName}>{item.name}</Text>
+      <Text style={styles.categoryName}>{item.name}</Text>
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  categoryItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  categoryImage: {
+    width: 50,
+    height: 50,
+    resizeMode: 'contain',
+    marginRight: 16,
+  },
+  categoryName: {
+    fontSize: 16,
+    color: '#000000',
+  },
+});
 
 export default CategoryItem;

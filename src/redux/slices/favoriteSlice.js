@@ -1,6 +1,6 @@
 // redux/slices/favoriteSlice.js
 import { createSlice } from '@reduxjs/toolkit';
-import { toggleFavorite, fetchFavoriteList } from '../actions/favoriteActions';
+import { toggleFavorite, fetchFavoriteList } from '../actions/actionFavorite';
 
 const initialState = {
   favoriteList: [], // Lưu danh sách productId để dễ kiểm tra

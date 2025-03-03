@@ -1,36 +1,91 @@
-import React, {useEffect, useCallback} from 'react';
+import React, {useEffect, useCallback, useState} from 'react';
 import {
   StyleSheet,
   Text,
   View,
   Image,
-  ScrollView,
   TouchableOpacity,
+  FlatList,
+  RefreshControl,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {fetchPurchasedProducts} from '../../redux/actions/actionOder'; // Giả sử bạn có hành động này
+import {fetchPurchasedProducts} from '../../redux/actions/actionOder';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
-import {fetchUserReviews} from '../../redux/actions/actionsReview'; // Giả sử bạn có hành động này
+import {fetchUserReviews} from '../../redux/actions/actionsReview';
 import StatusView from '../../components/StatusView';
 
 const DeliveredOrders = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const [refreshing, setRefreshing] = useState(false);
+
   const {purchasedProducts, isLoading, error} = useSelector(
     state => state.order,
   );
-  const {userReviews} = useSelector(state => state.reviewResponses); // Lấy danh sách đánh giá của người dùng
-  console.log(userReviews);
+  const {userReviews} = useSelector(state => state.reviewResponses);
 
+  // Lấy dữ liệu khi component được mount lần đầu
   useEffect(() => {
     dispatch(fetchPurchasedProducts());
+    dispatch(fetchUserReviews());
   }, [dispatch]);
 
+  // Cập nhật lại dữ liệu mỗi khi màn hình lấy nét
   useFocusEffect(
     useCallback(() => {
+      dispatch(fetchPurchasedProducts());
       dispatch(fetchUserReviews());
     }, [dispatch]),
   );
+
+  // Hàm xử lý làm mới khi kéo
+  const onRefresh = () => {
+    setRefreshing(true);
+    Promise.all([dispatch(fetchPurchasedProducts()), dispatch(fetchUserReviews())])
+      .finally(() => setRefreshing(false));
+  };
+
+  // Render từng sản phẩm đã mua
+  const renderItem = ({item}) => {
+    const hasReviewed = userReviews.some(
+      review => review.product_id === item.product_id,
+    );
+
+    return (
+      <View style={styles.productItem}>
+        <Image
+          source={{
+            uri: item.imageVariant !== 'N/A' ? item.imageVariant : null,
+          }}
+          style={styles.productImage}
+        />
+        <View style={styles.productInfo}>
+          <Text style={styles.productName}>
+            {item.productName || 'Sản phẩm không xác định'}
+          </Text>
+          <Text style={styles.productPrice}>
+            {item.productPrice || 'N/A Đ'}
+          </Text>
+          <Text style={styles.productDetail}>Màu: {item.color}</Text>
+          <Text style={styles.productDetail}>Kích cỡ: {item.size}</Text>
+        </View>
+        {!hasReviewed && (
+          <TouchableOpacity
+            style={styles.reviewButton}
+            onPress={() =>
+              navigation.navigate('AddReview', {
+                productId: item.product_id,
+                color: item.color,
+                size: item.size,
+                imageVariant: item.imageVariant,
+              })
+            }>
+            <Text style={styles.reviewButtonText}>Viết đánh giá</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  };
 
   if (isLoading) {
     return <StatusView isLoading={true} />;
@@ -44,48 +99,15 @@ const DeliveredOrders = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      {purchasedProducts.map((item, index) => {
-        const hasReviewed = userReviews.some(
-          review => review.product_id === item.product_id,
-        );
-
-        return (
-          <View key={index} style={styles.productItem}>
-            <Image
-              source={{
-                uri: item.imageVariant !== 'N/A' ? item.imageVariant : null,
-              }}
-              style={styles.productImage}
-            />
-            <View style={styles.productInfo}>
-              <Text style={styles.productName}>
-                {item.productName || 'Sản phẩm không xác định'}
-              </Text>
-              <Text style={styles.productPrice}>
-                {item.productPrice || 'N/A Đ'}
-              </Text>
-              <Text style={styles.productDetail}>Màu: {item.color}</Text>
-              <Text style={styles.productDetail}>Kích cỡ: {item.size}</Text>
-            </View>
-            {!hasReviewed && (
-              <TouchableOpacity
-                style={styles.reviewButton}
-                onPress={() =>
-                  navigation.navigate('AddReview', {
-                    productId: item.product_id,
-                    color: item.color,
-                    size: item.size,
-                    imageVariant: item.imageVariant,
-                  })
-                }>
-                <Text style={styles.reviewButtonText}>Viết đánh giá</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        );
-      })}
-    </ScrollView>
+    <FlatList
+      data={purchasedProducts}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={renderItem}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      contentContainerStyle={styles.container}
+    />
   );
 };
 
@@ -93,15 +115,8 @@ export default DeliveredOrders;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#FFF',
     padding: 15,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#333',
+    backgroundColor: '#FFF',
   },
   productItem: {
     flexDirection: 'row',
@@ -118,7 +133,7 @@ const styles = StyleSheet.create({
     height: 100,
     marginRight: 10,
     borderRadius: 5,
-    backgroundColor: '#e0e0e0', // Màu nền cho sản phẩm không có hình ảnh
+    backgroundColor: '#e0e0e0',
   },
   productInfo: {
     flex: 1,
@@ -148,14 +163,5 @@ const styles = StyleSheet.create({
   reviewButtonText: {
     color: '#FFF',
     fontWeight: 'bold',
-  },
-  errorText: {
-    color: 'red',
-    textAlign: 'center',
-    marginTop: 20,
-  },
-  emptyText: {
-    color: 'gray',
-    textAlign: 'center',
   },
 });

@@ -7,6 +7,7 @@ import {
   fetchProductsByVariant,
   fetchProductById,
   fetchtProductById1,
+  searchProduct,
 } from '../actions/actionProduct';
 
 const initialState = {
@@ -16,7 +17,9 @@ const initialState = {
   productsByVariant: [],
   productDetails: {}, // Chi tiết sản phẩm được lưu trữ tại đây
   productById:[],
+  productSearch:[],
   isLoading: false,
+  isLoadingSearch: false,
   error: null,
 };
 
@@ -89,7 +92,18 @@ const productSlice = createSlice({
       .addCase(fetchtProductById1.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(searchProduct.pending, state => {
+        state.isLoadingSearch = true;
+      })
+      .addCase(searchProduct.fulfilled, (state, action) => {
+        state.isLoadingSearch = false;
+        state.productSearch = action.payload;
+      })
+      .addCase(searchProduct.rejected, (state, action) => {
+        state.isLoadingSearch = false;
+        state.error = action.payload;
+      })
   },
 });
 

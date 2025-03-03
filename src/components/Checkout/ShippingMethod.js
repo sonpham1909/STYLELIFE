@@ -8,6 +8,7 @@ const ShippingMethod = ({ methods, selectedMethod, onSelectMethod }) => {
       onSelectMethod(methods[0]._id);
     }
   }, [methods, selectedMethod, onSelectMethod]);
+  
 
   const renderPickerItems = () =>
     methods.map((method) => (

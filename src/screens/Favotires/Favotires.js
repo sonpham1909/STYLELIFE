@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { View, FlatList, StyleSheet, Text } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchFavoriteList, toggleFavorite } from '../../redux/actions/favoriteActions';
+import { fetchFavoriteList, toggleFavorite } from '../../redux/actions/actionFavorite';
 import FavoriteItem from '../../components/Favotires/ProductItem';
 import StatusView from '../../components/StatusView';
 

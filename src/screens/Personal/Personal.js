@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Image, ScrollView} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useNavigation} from '@react-navigation/native';
@@ -8,7 +8,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {fetchUserInfoVS1} from '../../redux/actions/actionUser';
 import {fetchAllAddresses} from '../../redux/actions/actionAddress'; // Import action để lấy danh sách địa chỉ
 import {fetchUserReviews} from '../../redux/actions/actionsReview'; // Import action để lấy danh sách địa chỉ
-import {fetchPurchasedProducts} from '../../redux/actions/actionOder'; // Import action để lấy danh sách địa chỉ
+import {fetchPurchasedProducts,fetchOrders} from '../../redux/actions/actionOder'; // Import action để lấy danh sách địa chỉ
 
 const Personal = () => {
   const dispatch = useDispatch();
@@ -20,6 +20,7 @@ const Personal = () => {
   const addressesList = useSelector(state => state.addresses.addressesList); // Lấy danh sách địa chỉ từ store
   const userReviews = useSelector((state) => state.reviewResponses.userReviews);
   const  purchasedProducts= useSelector((state) => state.order.purchasedProducts);
+  const  oderTotal= useSelector((state) => state.order.oderTotal);
 
   // Lấy thông tin người dùng từ userInfovs1.user
   const user = userInfovs1?.user;
@@ -29,7 +30,10 @@ const Personal = () => {
     dispatch(fetchUserInfoVS1());
     dispatch(fetchAllAddresses());
     dispatch(fetchPurchasedProducts());
-    dispatch(fetchUserReviews()); // Lấy danh sách địa chỉ khi mở màn hình
+    dispatch(fetchUserReviews());
+    dispatch(fetchOrders());
+
+    // Lấy danh sách địa chỉ khi mở màn hình
     // Lấy danh sách địa chỉ khi mở màn hình
   }, [dispatch]);
 
@@ -67,13 +71,13 @@ const Personal = () => {
   };
 
   return (
-    <View style={styles.container}>
+   <ScrollView>
+     <View style={styles.container}>
       <View style={styles.info}>
         <TouchableOpacity style={styles.boxAvatar} onPress={chooseImage}>
           {avatar ? (
             <Image source={avatar} style={styles.avatar} />
-          ) : (
-            // Sử dụng ảnh avatar từ Redux nếu có, nếu không sẽ hiển thị ảnh mặc định
+          ) : (// Sử dụng ảnh avatar từ Redux nếu có, nếu không sẽ hiển thị ảnh mặc định
             <Image
               source={
                 user?.avatar
@@ -101,7 +105,7 @@ const Personal = () => {
         onpress={() => {
           navigation.navigate('InvoicesScreen');
         }}
-        preview={'Đã có ' + orders.length + ' đơn hàng'}
+        preview={'Đã có ' + oderTotal.length + ' đơn hàng'}
       />
       <CardProfile
         title={'Địa chỉ giao hàng'}
@@ -124,6 +128,13 @@ const Personal = () => {
         }}
         preview={'Đã mua ' + purchasedProducts.length + ' sản phẩm'}
       />
+       <CardProfile
+        title={'Liên hệ với chủ shop'}
+        onpress={() => {
+          navigation.navigate('MessageScreen');
+        }}
+       
+      />
       <CardProfile
         title={'Cài đặt'}
         onpress={() => {
@@ -132,6 +143,7 @@ const Personal = () => {
         preview={'Thông báo, Mật khẩu, FAQ, Liên hệ'}
       />
     </View>
+   </ScrollView>
   );
 };
 

@@ -1,24 +1,27 @@
-import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  ScrollView,
-} from 'react-native';
+import React, {useEffect} from 'react';
+import {View, Text, Image, StyleSheet, ScrollView} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch, useSelector} from 'react-redux';
-import {fetchOrderDetails} from '../../redux/actions/actionOder';
+import {
+  fetchOrderDetails,
+  fetchOrderPaymentStatus,
+} from '../../redux/actions/actionOder';
 import {useRoute} from '@react-navigation/native';
 import StatusView from '../../components/StatusView';
 
 const DetailedOrders = () => {
   const dispatch = useDispatch();
   const route = useRoute();
-  const { orderId } = route.params;
+  const {orderId} = route.params;
 
-  const { orderDetails, isLoading, error } = useSelector(state => state.order);
-  
+  const {
+    orderDetails,
+    paymentStatus,
+    isLoadingOrderDetails,
+    isLoadingPaymentStatus,
+    error,
+  } = useSelector(state => state.order);
+
   // Tính tổng tiền của các item trong đơn hàng
   const totalAmount = orderDetails.items
     ? orderDetails.items.reduce((acc, item) => acc + item.total_amount, 0)
@@ -27,13 +30,14 @@ const DetailedOrders = () => {
   useEffect(() => {
     if (orderId) {
       dispatch(fetchOrderDetails(orderId));
+      dispatch(fetchOrderPaymentStatus(orderId)); // Thêm dòng này để gọi thông tin thanh toán
     }
   }, [dispatch, orderId]);
 
-  if (isLoading) {
+  if (isLoadingOrderDetails || isLoadingPaymentStatus) {
     return <StatusView isLoading={true} />;
   }
-    
+
   if (!orderDetails || orderDetails.length === 0) {
     return <StatusView emptyText="Không có sản phẩm nào đã mua." />;
   }
@@ -41,11 +45,9 @@ const DetailedOrders = () => {
     return <StatusView error={error} />;
   }
 
-
-
   const formatAddress = addressDetail => {
     if (!addressDetail) return 'Chưa có địa chỉ';
-    const { street, ward, district, city } = addressDetail;
+    const {street, ward, district, city} = addressDetail;
     return [street, ward, district, city].filter(Boolean).join(', ');
   };
 
@@ -64,7 +66,11 @@ const DetailedOrders = () => {
       {/* Hàng hóa */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <MaterialCommunityIcons name="package-variant-closed" size={20} color="#00A65E" />
+          <MaterialCommunityIcons
+            name="package-variant-closed"
+            size={20}
+            color="#00A65E"
+          />
           <Text style={styles.sectionTitle}>Hàng hóa</Text>
         </View>
 
@@ -86,12 +92,13 @@ const DetailedOrders = () => {
                       {index + 1}. Sản phẩm: {product?.name || 'N/A'}
                     </Text>
                     <Text style={styles.productColor}>
-                      Màu sắc: {item.color || 'N/A' }
+                      Màu sắc: {item.color || 'N/A'}
                       {' || '}
                       Size : {item.size}
                     </Text>
                     <Text style={styles.productPrice}>
-                      {item.quantity} x {Number(item.price).toLocaleString('vi-VN')} Đ ={' '}
+                      {item.quantity} x{' '}
+                      {Number(item.price).toLocaleString('vi-VN')} Đ ={' '}
                       {Number(item.total_amount).toLocaleString('vi-VN')} Đ
                     </Text>
                   </View>
@@ -106,7 +113,8 @@ const DetailedOrders = () => {
         {/* Tổng tiền của đơn hàng */}
         <View style={styles.totalAmountContainer}>
           <Text style={styles.totalAmountText}>
-            Tổng giá trị đơn hàng: {totalAmount ? totalAmount.toLocaleString('vi-VN') : 'N/A'} Đ
+            Tổng giá trị đơn hàng:{' '}
+            {totalAmount ? totalAmount.toLocaleString('vi-VN') : 'N/A'} Đ
           </Text>
         </View>
       </View>
@@ -114,12 +122,20 @@ const DetailedOrders = () => {
       {/* Khách hàng */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <MaterialCommunityIcons name="account-outline" size={20} color="#00A65E" />
+          <MaterialCommunityIcons
+            name="account-outline"
+            size={20}
+            color="#00A65E"
+          />
           <Text style={styles.sectionTitle}>Khách hàng</Text>
         </View>
         <View style={styles.customerInfo}>
           <View style={styles.customerRow}>
-            <MaterialCommunityIcons name="account-outline" size={20} color="#00A65E" />
+            <MaterialCommunityIcons
+              name="account-outline"
+              size={20}
+              color="#00A65E"
+            />
             <Text style={styles.customerText}>
               {orderDetails?.order?.recipientName || 'Không có tên người nhận'}
             </Text>
@@ -131,7 +147,11 @@ const DetailedOrders = () => {
             </Text>
           </View>
           <View style={styles.customerRow}>
-            <MaterialCommunityIcons name="map-marker" size={20} color="#00A65E" />
+            <MaterialCommunityIcons
+              name="map-marker"
+              size={20}
+              color="#00A65E"
+            />
             <Text style={styles.customerText}>
               {formatAddress(orderDetails?.order?.addressDetail)}
             </Text>
@@ -142,20 +162,40 @@ const DetailedOrders = () => {
       {/* Thanh toán */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <MaterialCommunityIcons name="credit-card-outline" size={20} color="#00A65E" />
+          <MaterialCommunityIcons
+            name="credit-card-outline"
+            size={20}
+            color="#00A65E"
+          />
           <Text style={styles.sectionTitle}>Thanh toán</Text>
         </View>
         <View style={styles.paymentInfo}>
           <Text style={styles.paymentText}>
-            Method: {orderDetails?.order?.payment_method_id?.name || 'Chưa xác định'}
+            Method:{' '}
+            {orderDetails?.order?.payment_method_id?.name || 'Chưa xác định'}
           </Text>
+
+          {paymentStatus?.paymentMethod === 'MoMo' && (
+            <Text style={styles.paymentText}>
+              Trạng thái:{' '}
+              {paymentStatus?.paymentStatus === 'paid'
+                ? 'Đã thanh toán'
+                : paymentStatus?.paymentStatus === 'pending'
+                ? 'Đang chờ thanh toán'
+                : paymentStatus?.paymentStatus === 'cancelled'
+                ? 'Giao dịch bị hủy'
+                : paymentStatus?.paymentStatus === 'failed'
+                ? 'Giao dịch thất bại'
+                : paymentStatus?.paymentStatus === 'expired'
+                ? 'Giao dịch hết hạn'
+                : 'Trạng thái không xác định'}
+            </Text>
+          )}
         </View>
       </View>
     </ScrollView>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {

@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View, TextInput, Switch } from 'react-native';
-import React, { useState } from 'react';
+import {StyleSheet, Text, View, TextInput, Switch} from 'react-native';
+import React, {useState} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'; // For pencil icon
 import globalStyles from '../../styles/globalStyles';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
 const SettingScreen = () => {
   const navigation = useNavigation(); // For navigation if needed
@@ -10,31 +10,14 @@ const SettingScreen = () => {
   const [isBackgroundEnabled, setIsBackgroundEnabled] = useState(false);
 
   // Handlers for switches
-  const toggleSalesSwitch = () => setIsSalesEnabled(previousState => !previousState);
-  const toggleBackgroundSwitch = () => setIsBackgroundEnabled(previousState => !previousState);
+  const toggleSalesSwitch = () =>
+    setIsSalesEnabled(previousState => !previousState);
+  const toggleBackgroundSwitch = () =>
+    setIsBackgroundEnabled(previousState => !previousState);
 
   return (
     <View style={globalStyles.containerSetting}>
       {/* Header with pencil icon */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Thông Tin Cá Nhân</Text>
-        <MaterialCommunityIcons name="pencil" size={24} color="#C4C4C4" />
-      </View>
-
-      {/* Name Section */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Họ Tên</Text>
-        <Text style={styles.label1}>Viet gio tai</Text>
-
-      </View>
-
-      {/* Email Section */}
-      <View style={styles.section}>
-        <Text style={styles.label}>Email</Text>
-        <Text style={styles.label1}>vvv@gmail.com</Text>
-
-      
-      </View>
 
       <View style={styles.header}>
         <Text style={styles.headerText1}>Password</Text>
@@ -42,7 +25,7 @@ const SettingScreen = () => {
       </View>
       {/* Password Section */}
       <View style={styles.section}>
-      <Text style={styles.label}>name</Text>
+        <Text style={styles.label}>name</Text>
         <Text style={styles.label1}>*************</Text>
       </View>
 
@@ -53,7 +36,7 @@ const SettingScreen = () => {
       <View style={styles.switchContainer}>
         <Text style={styles.switchLabel}>Sales</Text>
         <Switch
-          trackColor={{ false: '#767577', true: '#81b0ff' }}
+          trackColor={{false: '#767577', true: '#81b0ff'}}
           thumbColor={isSalesEnabled ? '#4CAF50' : '#f4f3f4'}
           onValueChange={toggleSalesSwitch}
           value={isSalesEnabled}
@@ -64,7 +47,7 @@ const SettingScreen = () => {
       <View style={styles.switchContainer}>
         <Text style={styles.switchLabel}>Màu nền</Text>
         <Switch
-          trackColor={{ false: '#767577', true: '#81b0ff' }}
+          trackColor={{false: '#767577', true: '#81b0ff'}}
           thumbColor={isBackgroundEnabled ? '#4CAF50' : '#f4f3f4'}
           onValueChange={toggleBackgroundSwitch}
           value={isBackgroundEnabled}
@@ -82,17 +65,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   headerText: {
-    color:' #909191',
+    color: ' #909191',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily:'Nunito Sans'
+    fontFamily: 'Nunito Sans',
   },
   headerText1: {
-    color:' #909191',
+    color: ' #909191',
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily:'Nunito Sans',
-    paddingTop:20
+    fontFamily: 'Nunito Sans',
+    paddingTop: 20,
   },
   section: {
     backgroundColor: '#fff',
@@ -101,7 +84,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     elevation: 2, // Shadow for Android
     shadowColor: '#000', // Shadow for iOS
-    shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
+    shadowOffset: {width: 0, height: 2}, // Shadow for iOS
     shadowOpacity: 0.1, // Shadow for iOS
     shadowRadius: 8, // Shadow for iOS
   },
@@ -139,7 +122,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 2, // Shadow for Android
     shadowColor: '#000', // Shadow for iOS
-    shadowOffset: { width: 0, height: 2 }, // Shadow for iOS
+    shadowOffset: {width: 0, height: 2}, // Shadow for iOS
     shadowOpacity: 0.1, // Shadow for iOS
     shadowRadius: 8, // Shadow for iOS
   },

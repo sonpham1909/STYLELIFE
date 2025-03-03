@@ -11,6 +11,13 @@ import shippingReducer from '../slices/shippingSlice';
 import paymentReducer from '../slices/paymentSlice';
 import oderReducer from '../slices/oderSlice';
 
+import searchReducer from '../slices/searchSlice';
+
+import momoPaymentReducer from '../slices/paymentmomoSlice'; // sửa tên để nhất quán
+import messageRepliesReducer from '../slices/messageSlice';
+import notificationReducer from '../slices/notificationSlice'
+
+
 const store = configureStore({
   reducer: {
     user: userReducer,
@@ -25,8 +32,14 @@ const store = configureStore({
     payment: paymentReducer,  // Thêm reducer này
     order: oderReducer,  // Thêm reducer này
 
+    search: searchReducer,
+
+
+    momoPayment: momoPaymentReducer, // đổi tên từ `momoPaymentUrl`
+    messageReplies: messageRepliesReducer,  // Đảm bảo tên này đồng nhất
+    notification:notificationReducer
+
   },
- 
 });
 
 export default store;

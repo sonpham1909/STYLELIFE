@@ -58,6 +58,8 @@ export const addProductReview = createAsyncThunk(
         const token = await tokenService.getToken();
         const response = await axios.post(`${API_URL}/Review/addReviewByApp`, reviewData, {
           headers: {
+            'Content-Type': 'multipart/form-data',
+            
             Authorization: `Bearer ${token}`,
           },
         });

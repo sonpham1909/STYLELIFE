@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { addProductReview } from '../../redux/actions/actionsReview'; // Hành động để thêm đánh giá
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { fetchProductById, fetchProductReviews } from '../../redux/actions/actionProduct';
 
 const AddReview = () => {
   const dispatch = useDispatch();
@@ -37,34 +38,61 @@ const AddReview = () => {
     });
   };
 
-  const handleSubmitReview = () => {
+  const handleSubmitReview = async () => {
     if (!rating) {
       alert('Vui lòng chọn điểm đánh giá!');
       return;
     }
-
-    const reviewData = {
-      product_id: productId,
-      rating,
-      comment,
-      color,
-      size,
-      image_variant: imageVariant,
-      img: selectedImages.map(image => image.uri),
-    };
-
-    dispatch(addProductReview(reviewData))
-      .unwrap()
-      .then(() => {
-        alert('Đánh giá đã được thêm thành công!');
-        navigation.goBack(); // Quay lại màn hình trước
-      })
-      .catch(error => {
-        console.error('Error adding review:', error);
-        alert('Lỗi khi thêm đánh giá, vui lòng thử lại.');
+  
+    try {
+      // Upload từng ảnh và lấy các URL trả về từ backend
+    
+  console.log(productId);
+  
+   
+      const formData = new FormData();
+      formData.append('product_id', productId._id);
+      formData.append('rating', rating);
+      formData.append('comment', comment);
+      formData.append('color', color);
+      formData.append('size', size);
+      formData.append('image_variant', imageVariant);
+  
+      // Thêm từng ảnh vào FormData
+      selectedImages.forEach((image, index) => {
+        console.log(image);
+        
+        formData.append('imageUrls', {
+          uri: image.uri,
+          type: 'image/jpeg', // hoặc image/png, image/jpg
+          name: `image_${index}.jpg`,
+        });
       });
-  };
 
+      
+  
+  
+      // Gửi đánh giá lên server
+      await dispatch(addProductReview(formData))
+        .unwrap()
+        .then(() => {
+          alert('Đánh giá đã được thêm thành công!');
+          dispatch(fetchProductReviews(productId));
+          navigation.goBack(); // Quay lại màn hình trước
+        })
+        .catch(error => {
+          console.error('Error adding review:', error);
+          alert('Lỗi khi thêm đánh giá, vui lòng thử lại.');
+        });
+
+       
+  
+    } catch (error) {
+      console.error('Error uploading images:', error);
+      alert('Lỗi khi upload ảnh, vui lòng thử lại.');
+    }
+  };
+  
   const renderStars = () => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {

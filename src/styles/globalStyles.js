@@ -157,7 +157,12 @@ const globalStyles = StyleSheet.create({
     shadowRadius: 8,//độ lan
     elevation: 1,//chiều cao của phần tử so với nền bóng đổ
   },
- 
+  instructionText: {
+    fontSize: 18, // Kích thước chữ
+    color: '#333', // Màu chữ
+    fontWeight: '600', // Đậm vừa
+    textAlign: 'center', // Căn giữa văn bản
+  },
 
 
 

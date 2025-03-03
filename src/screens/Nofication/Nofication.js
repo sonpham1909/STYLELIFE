@@ -1,42 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { socket } from '../../services/sockerIo';
 import NotificationList from '../../components/Nofication/NotificationList';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchNotification } from '../../redux/actions/actionNotification';
 
 const Notification = () => {
-  const notifications = [
-    {
-      id: 1,
-      image: require('../../assets/images/item_1.png'),
-      title: 'Your order #123456789 has been confirmed',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Turpis pretium et in arcu adipiscing nec.',
-      status: 'New',
-    },
-    {
-      id: 2,
-      image: require('../../assets/images/item_1.png'),
-      title: 'Your order #123456789 has been canceled',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Turpis pretium et in arcu adipiscing nec.',
-      status: '',
-    },
-    {
-      id: 3,
-      image: require('../../assets/images/item_1.png'),
-      title: 'Your order #123456789 has been shipped successfully',
-      description: 'Please help us to confirm and rate your order to get 10% discount code for next order.',
-      status: '',
-    },
-    {
-      id: 4,
-      image: require('../../assets/images/item_1.png'),
-      title: 'Your order #123456789 has been confirmed',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Turpis pretium et in arcu adipiscing nec.',
-      status: 'New',
-    },
-  ];
+  const dispatch = useDispatch();
+  const { isLoading, notification: reduxNotifications } = useSelector((state) => state.notification);
+  const [notifications, setNotifications] = useState([]);
+
+  // Lấy danh sách thông báo từ Redux khi component mount
+  useEffect(() => {
+    dispatch(fetchNotification());
+  }, [dispatch]);
+
+  // Đồng bộ dữ liệu thông báo từ Redux vào state local
+  useEffect(() => {
+    setNotifications(reduxNotifications);
+  }, [reduxNotifications]);
+
+  // Lắng nghe thông báo mới từ socket và cập nhật state local
+  useEffect(() => {
+    socket.on('pushnotification', (data) => {
+      setNotifications((prev) => [data, ...prev]); // Thêm thông báo mới vào đầu danh sách
+      console.log('Received notification:', data);
+    });
+
+    // Cleanup khi component bị unmount
+    return () => {
+      socket.off('pushnotification');
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
-      <NotificationList notifications={notifications} />
+      {isLoading ? (
+        <Text>Đang tải thông báo...</Text>
+      ) : notifications.length === 0 ? (
+        <Text>Chưa có thông báo nào.</Text>
+      ) : (
+        <NotificationList notifications={notifications} />
+      )}
     </View>
   );
 };
@@ -45,14 +50,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF',
-  },
-  header: {
-    backgroundColor: '#00A65E',
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-    padding: 15,
-    textAlign: 'center',
+    padding: 20,
   },
 });
 
