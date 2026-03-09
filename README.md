@@ -78,3 +78,6 @@ Cloud Storage: Cloudinary
 Frontend: ReactJS (admin panel), React Native (mobile app)
 License
 This project is open-source and available under the MIT License.
+
+LINK VIDEO DEMO: https://www.loom.com/share/e3112ac792f04175bdbef9736fa06e8a?sid=77cf3de0-8fdb-499b-86f7-0062939bffbc
+
